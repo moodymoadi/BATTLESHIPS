@@ -4,6 +4,8 @@
 using namespace std;
 
 class Utils {
+private:
+
 public:
 	void SetConsoleColour(WORD* Attributes, DWORD Colour)
 	{
@@ -33,6 +35,86 @@ public:
 			cin >> *_pickedShip;
 		}
 	}
-private:
 
+	// the user chooses two elements on the board
+	// 1_from element, 2_to element. the funcion checks if the user
+	// choosed horizotaly or vertacly or non of them by the two choosed elements
+	int checkIfCorrectPositionChoosed(Board _b, int* _pickedShip,
+		bool* _isChooseCorrect, int* _size,
+		int* _fromPos, int* _toPos,
+		int* _fromRow, int* _fromCol,
+		int* _toRow, int* _toCol) {
+
+		*_isChooseCorrect = false;
+		cout << "from: "; cin >> *_fromPos;
+		while (*_fromPos < 0 || *_fromPos > 99) {
+			cout << "please choose between 00 to 99" << endl;
+			cout << "from: "; cin >> *_fromPos;
+		}
+		cout << "to: "; cin >> *_toPos;
+		while (*_toPos < 0 || *_toPos > 99) {
+			cout << "please choose between 00 to 99" << endl;
+			cout << "to: "; cin >> *_toPos;
+		}
+		*_fromRow = *_fromPos / 10;//takes the row(fromRow) from the first choosen element
+		*_fromCol = *_fromPos % 10;//takes the column(fromCol) from the first choosen element
+		*_toRow = *_toPos / 10;//takes the row(toRow) from the second choosen element
+		*_toCol = *_toPos % 10;//takes the column(toCol) from the second choosen element
+
+		if (*_fromPos == *_toPos)
+		{
+			_b.getShip(*_pickedShip - 1).setPosition(NO_POSITION);
+		}
+		else if (*_fromRow == *_toRow)
+		{
+			_b.getShip(*_pickedShip - 1).setPosition(HORIZONTAL);
+		}
+		else if (*_fromCol == *_toCol) {
+			_b.getShip(*_pickedShip - 1).setPosition(VERTICAL);
+		}
+		else {
+			_b.getShip(*_pickedShip - 1).setPosition(NO_POSITION);
+		}
+		return _b.getShip(*_pickedShip - 1).getPosition();
+	}
+
+	void printShipsForOnePlayer(Board _b) {
+		for (int i = 0; i < 5; i++)
+		{
+			cout << endl;
+			cout << "player 1 ship " << i + 1 << ":" << endl;
+			cout << "is ship choosed: " << _b.getShip(i).isChoosed() << endl;
+			cout << "is ship living: " << _b.getShip(i).isLiving() << endl;
+			cout << "ship from row: " << _b.getShip(i).getFromRow() << endl;
+			cout << "ship from col: " << _b.getShip(i).getFromCol() << endl;
+			cout << "ship to row: " << _b.getShip(i).getToRow() << endl;
+			cout << "ship to col: " << _b.getShip(i).getToCol() << endl;
+		}
+	}
+
+	void printShipsForTwoPlayers(Board _b1, Board _b2) {
+		for (int i = 0; i < 5; i++)
+		{
+			cout << endl;
+			cout << "player 1 ship " << i + 1 << ":" << endl;
+			cout << "is ship choosed: " << _b1.getShip(i).isChoosed() << endl;
+			cout << "is ship living: " << _b1.getShip(i).isLiving() << endl;
+			cout << "ship from row: " << _b1.getShip(i).getFromRow() << endl;
+			cout << "ship from col: " << _b1.getShip(i).getFromCol() << endl;
+			cout << "ship to row: " << _b1.getShip(i).getToRow() << endl;
+			cout << "ship to col: " << _b1.getShip(i).getToCol() << endl;
+		}
+
+		for (int i = 0; i < 5; i++)
+		{
+			cout << endl;
+			cout << "player 2 ship " << i + 1 << ":" << endl;
+			cout << "is ship choosed: " << _b2.getShip(i).isChoosed() << endl;
+			cout << "is ship living: " << _b2.getShip(i).isLiving() << endl;
+			cout << "ship from row: " << _b2.getShip(i).getFromRow() << endl;
+			cout << "ship from col: " << _b2.getShip(i).getFromCol() << endl;
+			cout << "ship to row: " << _b2.getShip(i).getToRow() << endl;
+			cout << "ship to col: " << _b2.getShip(i).getToCol() << endl;
+		}
+	}
 };
