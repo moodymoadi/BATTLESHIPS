@@ -1,14 +1,13 @@
 #include "Ship.h"
 
 Ship::Ship(){
-	/*default constructor*/
 }
 
 Ship::Ship(int _id, int _size, int _pos, int _fromRow, int _fromCol, int _toRow, int _toCol, bool _choosed, bool _living){
 	setId(_id);
 	setSize(_size);
 	setPosition(_pos);
-	setPlace(_fromRow, _fromCol, _toRow, toCol);
+	setPlace(_size, _pos, _fromRow, _fromCol, _toRow, toCol);
 	setChoosed(false);
 	setLiving(_living);
 	setDestruction(_size);
@@ -42,24 +41,41 @@ void Ship::setToCol(int _toCol) {
 	toCol = _toCol;
 }
 
-void Ship::setPlace(int _size, int _position, int _fromRow, int _fromCol){
-	if (_position == HORIZONTAL) {
+void Ship::setPlace(int _size, int _position,
+	int _fromRow, int _fromCol,
+	int _toRow, int _toCol){
+	if (_position == HORIZONTAL && _toCol > _fromCol) {
 		fromRow = _fromRow;
 		fromCol = _fromCol;
 		toRow = _fromRow;
 		toCol = _fromCol + _size-1;
+		setChoosed(true);
 	}
-	else if (_position == VERTICAL) {
+	else if (_position == HORIZONTAL && _fromCol > _toCol) {
+		fromRow = _fromRow;
+		fromCol = _fromCol;
+		toRow = _fromRow;
+		toCol = _fromCol - _size + 1;
+		setChoosed(true);
+	}
+	else if (_position == VERTICAL && _toRow > _fromRow) {
 		fromRow = _fromRow;
 		fromCol = _fromCol;
 		toRow = _fromRow + _size-1;
 		toCol = _fromCol;
+		setChoosed(true);
 	}
-	/*fromRow = _fromRow;
-	fromCol = _fromCol;
-	toRow = _toRow;
-	toCol = _toCol;*/
-	setChoosed(true);
+	else if (_position == VERTICAL && _fromRow > _toRow) {
+		fromRow = _fromRow;
+		fromCol = _fromCol;
+		toRow = _fromRow - _size + 1;
+		toCol = _fromCol;
+		setChoosed(true);
+	}
+	else {
+		setChoosed(false);
+	}
+	
 }
 
 void Ship::setLiving(bool _living){

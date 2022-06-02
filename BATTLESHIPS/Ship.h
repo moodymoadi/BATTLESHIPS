@@ -21,7 +21,6 @@ private:
 	vector<bool> destruction;
 
 public:
-
 	Ship();
 	Ship(int _id, int _size, int _Position, int _fromRow, int _fromCol, int _toRow, int _toCol, bool _choosed, bool _living);
 	void setId(int _id);
@@ -31,7 +30,7 @@ public:
 	void setFromCol(int _fromCol);
 	void setToRow(int _toRow);
 	void setToCol(int _toCol);
-	void setPlace(int _size, int _position, int _fromRow, int _fromCol);
+	void setPlace(int _size, int _position, int _fromRow, int _fromCol, int _toRow, int _toCol);
 	void setChoosed(bool _choosed);
 	void setLiving(bool _living);
 	void setDestruction(int _size);
