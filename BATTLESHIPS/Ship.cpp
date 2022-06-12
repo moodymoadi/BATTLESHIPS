@@ -49,6 +49,7 @@ void Ship::setPlace(int _size, int _position,
 		fromCol = _fromCol;
 		toRow = _fromRow;
 		toCol = _fromCol + _size-1;
+		setPosition(_position);
 		setChoosed(true);
 	}
 	else if (_position == HORIZONTAL && _fromCol > _toCol) {
@@ -75,7 +76,6 @@ void Ship::setPlace(int _size, int _position,
 	else {
 		setChoosed(false);
 	}
-	
 }
 
 void Ship::setLiving(bool _living){
@@ -127,7 +127,7 @@ bool Ship::isChoosed() {
 	return choosed;
 }
 
-vector<bool> Ship::isDestruction(){
+vector<bool> Ship::getDestruction(){
 	return destruction;
 }
 
@@ -147,6 +147,7 @@ bool Ship::checkIfLiving(vector<bool> _dest)
 
 void Ship::updateDestruction(int i) {
 	destruction.at(i) = false;
+	checkIfLiving(getDestruction());
 }
 
 

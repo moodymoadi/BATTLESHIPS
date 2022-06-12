@@ -90,62 +90,95 @@ Ship& Player::getShipByElement(int row, int col)
     }
 }
 
-void Player::UpdateShipDestructionByElement(int row, int col)
+Ship& Player::UpdateShipDestructionByElement(int row, int col)
 {
-    int size, position, fromRow, toRow, fromCol, toCol;
-    for (int i = 0; i < 5; i++)
+    try
     {
-        size = getShip(i).getSize();
-        position = getShip(i).getPosition();
-        fromRow = getShip(i).getFromRow();
-        toRow = getShip(i).getToRow();
-        fromCol = getShip(i).getFromCol();
-        toCol = getShip(i).getToCol();
+        int size, position, fromRow, toRow, fromCol, toCol;
+        for (int i = 0; i < 5; i++)
+        {
+            size = getShip(i).getSize();
+            position = getShip(i).getPosition();
+            fromRow = getShip(i).getFromRow();
+            toRow = getShip(i).getToRow();
+            fromCol = getShip(i).getFromCol();
+            toCol = getShip(i).getToCol();
 
-        if (position == HORIZONTAL && toCol > fromCol) {/* check ship horizintaly from left to right*/
-            for (int j = 0; j < size; j++)
-            {
-                if (fromRow == row && fromCol + j == col)
+            if (position == HORIZONTAL && toCol > fromCol) {/* check ship horizintaly from left to right*/
+                for (int j = 0; j < size; j++)
                 {
-                    getShip(i).updateDestruction(j);
+                    if (fromRow == row && fromCol + j == col)
+                    {
+                        getShip(i).updateDestruction(j);
+                        return getShip(i);
+                    }
                 }
             }
-        }
-        else if (position == HORIZONTAL && fromCol > toCol)/* check ship horizintaly from right to left*/
-        {
-            for (int j = 0; j < size; j++)
+            else if (position == HORIZONTAL && fromCol > toCol)/* check ship horizintaly from right to left*/
             {
-                if (fromRow == row && fromCol - j == col)
+                for (int j = 0; j < size; j++)
                 {
-                    getShip(i).updateDestruction(j);
+                    if (fromRow == row && fromCol - j == col)
+                    {
+                        getShip(i).updateDestruction(j);
+                        return getShip(i);
+                    }
                 }
             }
-        }
-        else if (position == VERTICAL && toRow > fromRow) {/* check ship verticaly from up to down*/
-            for (int j = 0; j < size; j++)
-            {
-                if (fromRow + j == row && fromCol == col)
+            else if (position == VERTICAL && toRow > fromRow) {/* check ship verticaly from up to down*/
+                for (int j = 0; j < size; j++)
                 {
-                    getShip(i).updateDestruction(j);
+                    if (fromRow + j == row && fromCol == col)
+                    {
+                        getShip(i).updateDestruction(j);
+                        return getShip(i);
+                    }
                 }
             }
-        }
-        else if (position == VERTICAL && fromRow > toRow)/* check ship verticaly from down to up*/
-        {
-            for (int j = 0; j < size; j++)
+            else if (position == VERTICAL && fromRow > toRow)/* check ship verticaly from down to up*/
             {
-                if (fromRow - j == row && fromCol == col)
+                for (int j = 0; j < size; j++)
                 {
-                    getShip(i).updateDestruction(j);
+                    if (fromRow - j == row && fromCol == col)
+                    {
+                        getShip(i).updateDestruction(j);
+                        return getShip(i);
+                    }
                 }
             }
         }
     }
+    catch (const std::exception& e)
+    {
+        cout << "exception: " << e.what() << endl;
+    }
+}
+
+bool Player::checkIfAllShipsAlive()
+{
+    int counter = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        if (!getShip(i).checkIfLiving(getShip(i).getDestruction()))
+        {
+            counter++;
+        }
+    }
+    if (counter == 5)
+    {
+        return false;
+    }
+    return true;
 }
 
 int Player::getNum()
 {
     return num;
+}
+
+AiShipHit& Player::getAiShipHit()
+{
+    return aiShipHit;
 }
 
 void Player::printShips(){

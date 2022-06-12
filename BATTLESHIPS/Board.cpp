@@ -1,8 +1,6 @@
-#include<iostream>
+
 #include "Board.h"
 #include "Utils.cpp"
-
-
 
 Board::Board(){
 	for (int i = 0; i < 10; i++)
@@ -87,7 +85,7 @@ void Board::addShipsRandomly()
 				isAdjacent = checkIfAdjacent(randPosition, size, fromRow, fromCol, toRow, toCol);
 				if (!isAdjacent)
 				{
-					addToBoard(randPosition, size, fromRow, fromCol, toRow, toCol);
+					addToBoard(randPosition, size, fromRow, fromCol, toRow, toCol,SHIP_EXIST, SHIP_EDGES);
 					setShip(i, i + 1, size, randPosition, fromRow, fromCol, toRow, toCol, true);
 					getShip(i).setChoosed(true);
 				}
@@ -128,16 +126,17 @@ bool Board::checkIfAdjacent(int _position, int _size, int _fromRow,
 }
 
 /*this function adds the ship to the board by initializing 1
-to the elements that the ship is located in*/
+to the elements that the ship is located in and -1 to all the adjacent elements*/
 void Board::addToBoard(int _position, int _size,
 	int _fromRow, int _fromCol,
-	int _toRow, int _toCol){
+	int _toRow, int _toCol, int _shipElems,
+	int _adjElems){
 
 	/* add ship to the board horizintaly from left to right*/
 	if (_position == HORIZONTAL && _toCol > _fromCol) {
 		addFromLeftToRight(_position, _size,
 			_fromRow, _fromCol,
-			_toRow, _toCol);
+			_toRow, _toCol, _shipElems, _adjElems);
 	}
 
 	/* add ship to the board horizintaly from right to left*/
@@ -145,14 +144,14 @@ void Board::addToBoard(int _position, int _size,
 	{
 		addFromRightToLeft(_position, _size,
 			_fromRow, _fromCol,
-			_toRow, _toCol);
+			_toRow, _toCol, _shipElems, _adjElems);
 	}
 
 	/* add ship to the board verticaly from up to down*/
 	else if (_position == VERTICAL && _toRow > _fromRow) {
 		addFromUpToDown(_position, _size,
 			_fromRow, _fromCol,
-			_toRow, _toCol);
+			_toRow, _toCol, _shipElems, _adjElems);
 	}
 
 	/* add ship to the board verticaly from down to up*/
@@ -160,22 +159,21 @@ void Board::addToBoard(int _position, int _size,
 	{
 		addFromDownToUp(_position, _size,
 			_fromRow, _fromCol,
-			_toRow, _toCol);
+			_toRow, _toCol, _shipElems, _adjElems);
 	}
 	
 }
 
 void Board::addFromLeftToRight(int _position, int _size,
 	int _fromRow, int _fromCol,
-	int _toRow, int _toCol) {
-
+	int _toRow, int _toCol, int _shipElems, int adjElems) {
 	int temp = _fromCol;
 
 	/*make all the adjacent elements to the ship equal to -1*/
 	for (int i = 0; i < _size; i++)
 	{
 		/*this makes the elements of the ship equal to 1*/
-		myBoard[_fromRow][_fromCol++] = SHIP_EXIST;//the ship
+		myBoard[_fromRow][_fromCol++] = _shipElems;//the ship
 
 		//todo -- put out side of the parent loop
 		/* make all the adjacent elements
@@ -183,41 +181,41 @@ void Board::addFromLeftToRight(int _position, int _size,
 		for (int i = 0; i < _size; i++)
 		{
 			if (_fromRow != 9)
-				myBoard[_fromRow + 1][temp + i] = SHIP_EDGES;
+				myBoard[_fromRow + 1][temp + i] = adjElems;
 			if (_fromRow != 0)
-				myBoard[_fromRow - 1][temp + i] = SHIP_EDGES;
+				myBoard[_fromRow - 1][temp + i] = adjElems;
 		}
 
 		/* make all the adjacent elements
 		from left to the ship (col-1) equal to -1 */
 		if (temp != 0 && _fromRow != 0)
-			myBoard[_fromRow - 1][temp - 1] = SHIP_EDGES;//aboveLeft
+			myBoard[_fromRow - 1][temp - 1] = adjElems;//aboveLeft
 		if (temp != 0)
-			myBoard[_fromRow][temp - 1] = SHIP_EDGES;//left
+			myBoard[_fromRow][temp - 1] = adjElems;//left
 		if (temp != 0 && _fromRow != 9)
-			myBoard[_fromRow + 1][temp - 1] = SHIP_EDGES;//bellowLeft
+			myBoard[_fromRow + 1][temp - 1] = adjElems;//bellowLeft
 
 		/* make all the adjacent elements
 		from right to the ship (col+size) equal to -1 */
 		if (temp + _size != 10 && _fromRow != 0)
-			myBoard[_fromRow - 1][temp + _size] = SHIP_EDGES;//aboveRight
+			myBoard[_fromRow - 1][temp + _size] = adjElems;//aboveRight
 		if (temp + _size != 10)
-			myBoard[_fromRow][temp + _size] = SHIP_EDGES;//right
+			myBoard[_fromRow][temp + _size] = adjElems;//right
 		if (temp + _size != 10 && _fromRow != 9)
-			myBoard[_fromRow + 1][temp + _size] = SHIP_EDGES;//bellowRight
+			myBoard[_fromRow + 1][temp + _size] = adjElems;//bellowRight
 	}
 }
 
 void Board::addFromRightToLeft(int _position, int _size,
 	int _fromRow, int _fromCol,
-	int _toRow, int _toCol) {
+	int _toRow, int _toCol, int _shipElems, int adjElems) {
 	int temp = _fromCol;
 
 	/*make all the adjacent elements to the ship equal to -1*/
 	for (int i = 0; i < _size; i++)
 	{
 		/*this makes the elements of the ship equal to 1*/
-		myBoard[_fromRow][_fromCol--] = SHIP_EXIST;// the ship
+		myBoard[_fromRow][_fromCol--] = _shipElems;// the ship
 
 		//todo -- put out side of the parent loop
 		/* make all the adjacent elements
@@ -225,40 +223,40 @@ void Board::addFromRightToLeft(int _position, int _size,
 		for (int i = 0; i < _size; i++)
 		{
 			if (_fromRow != 9)
-				myBoard[_fromRow + 1][temp - i] = SHIP_EDGES;
+				myBoard[_fromRow + 1][temp - i] = adjElems;
 			if (_fromRow != 0)
-				myBoard[_fromRow - 1][temp - i] = SHIP_EDGES;
+				myBoard[_fromRow - 1][temp - i] = adjElems;
 		}
 
 		/* make all the adjacent elements
 		from left to the ship (col-size) equal to -1*/
 		if (temp - _size != -1 && _fromRow != 0)
-			myBoard[_fromRow - 1][temp - _size] = SHIP_EDGES;//aboveLeft
+			myBoard[_fromRow - 1][temp - _size] = adjElems;//aboveLeft
 		if (temp - _size != -1)
-			myBoard[_fromRow][temp - _size] = SHIP_EDGES;//left
+			myBoard[_fromRow][temp - _size] = adjElems;//left
 		if (temp - _size != -1 && _fromRow != 9)
-			myBoard[_fromRow + 1][temp - _size] = SHIP_EDGES;//bellowLeft
+			myBoard[_fromRow + 1][temp - _size] = adjElems;//bellowLeft
 
 		/* make all the adjacent elements
 		from right to the ship (col+1) equal to -1 */
 		if (temp != 9 && _fromRow != 0)
-			myBoard[_fromRow - 1][temp + 1] = SHIP_EDGES;//aboveRight
+			myBoard[_fromRow - 1][temp + 1] = adjElems;//aboveRight
 		if (temp != 9)
-			myBoard[_fromRow][temp + 1] = SHIP_EDGES;//right
+			myBoard[_fromRow][temp + 1] = adjElems;//right
 		if (temp != 9 && _fromRow != 9)
-			myBoard[_fromRow + 1][temp + 1] = SHIP_EDGES;//bellowRight
+			myBoard[_fromRow + 1][temp + 1] = adjElems;//bellowRight
 	}
 }
 
 void Board::addFromUpToDown(int _position, int _size,
 	int _fromRow, int _fromCol,
-	int _toRow, int _toCol) {
+	int _toRow, int _toCol, int _shipElems, int adjElems) {
 	int temp = _fromRow;
 
 	/*make all the adjacent elements to the ship equal to -1*/
 	for (int i = 0; i < _size; i++)
 	{
-		myBoard[_fromRow++][_fromCol] = SHIP_EXIST;// the ship
+		myBoard[_fromRow++][_fromCol] = _shipElems;// the ship
 
 		//todo -- put out side of the parent loop
 		/* make all the adjacent elements
@@ -266,65 +264,65 @@ void Board::addFromUpToDown(int _position, int _size,
 		for (int i = 0; i < _size; i++)
 		{
 			if (_fromCol != 9)
-				myBoard[temp + i][_fromCol + 1] = SHIP_EDGES;
+				myBoard[temp + i][_fromCol + 1] = adjElems;
 			if (_fromCol != 0)
-				myBoard[temp + i][_fromCol - 1] = SHIP_EDGES;
+				myBoard[temp + i][_fromCol - 1] = adjElems;
 		}
 
 		/* make all the adjacent elements
 		above to the ship (row-1) equal to -1 */
 		if (temp != 0 && _fromCol != 0)
-			myBoard[temp - 1][_fromCol - 1] = SHIP_EDGES;//leftAbove
+			myBoard[temp - 1][_fromCol - 1] = adjElems;//leftAbove
 		if (temp != 0)
-			myBoard[temp - 1][_fromCol] = SHIP_EDGES;//above
+			myBoard[temp - 1][_fromCol] = adjElems;//above
 		if (temp != 0 && _fromCol != 9)
-			myBoard[temp - 1][_fromCol + 1] = SHIP_EDGES;//rightAbove
+			myBoard[temp - 1][_fromCol + 1] = adjElems;//rightAbove
 
 		/* make all the adjacent elements
 		bellow the ship (row+size) equal to -1*/
 		if (temp + _size != 10 && _fromCol != 0)
-			myBoard[temp + _size][_fromCol - 1] = SHIP_EDGES;//leftBellow
+			myBoard[temp + _size][_fromCol - 1] = adjElems;//leftBellow
 		if (temp + _size != 10)
-			myBoard[temp + _size][_fromCol] = SHIP_EDGES;//bellow
+			myBoard[temp + _size][_fromCol] = adjElems;//bellow
 		if (temp + _size != 10 && _fromCol != 9)
-			myBoard[temp + _size][_fromCol + 1] = SHIP_EDGES;//rightBellow
+			myBoard[temp + _size][_fromCol + 1] = adjElems;//rightBellow
 	}
 }
 
 void Board::addFromDownToUp(int _position, int _size,
 	int _fromRow, int _fromCol,
-	int _toRow, int _toCol) {
+	int _toRow, int _toCol, int _shipElems, int adjElems) {
 	int temp = _fromRow;
 	/*make all the adjacent elements to the ship equal to -1*/
 	for (int i = 0; i < _size; i++)
 	{
-		myBoard[_fromRow--][_fromCol] = SHIP_EXIST;// the ship
+		myBoard[_fromRow--][_fromCol] = _shipElems;// the ship
 		for (int i = 0; i < _size; i++)
 		{
 			if (_fromCol != 9)
-				myBoard[temp - i][_fromCol + 1] = SHIP_EDGES;
+				myBoard[temp - i][_fromCol + 1] = adjElems;
 			if (_fromCol != 0)
-				myBoard[temp - i][_fromCol - 1] = SHIP_EDGES;
+				myBoard[temp - i][_fromCol - 1] = adjElems;
 		}
 
 		//todo -- put outside
 		/* make all the adjacent elements
 		above to the ship (row-size) equal to -1 */
 		if (temp - _size != -1 && _fromCol != 0)
-			myBoard[temp - _size][_fromCol - 1] = SHIP_EDGES;//leftAbove
+			myBoard[temp - _size][_fromCol - 1] = adjElems;//leftAbove
 		if (temp - _size != -1)
-			myBoard[temp - _size][_fromCol] = SHIP_EDGES;//above
+			myBoard[temp - _size][_fromCol] = adjElems;//above
 		if (temp - _size != -1 && _fromCol != 9)
-			myBoard[temp - _size][_fromCol + 1] = SHIP_EDGES;//rightAbove
+			myBoard[temp - _size][_fromCol + 1] = adjElems;//rightAbove
 
 		/* make all the adjacent elements
 		bellow the ship (row+1) equal to -1*/
 		if (temp != 9 && _fromCol != 0)
-			myBoard[temp + 1][_fromCol - 1] = SHIP_EDGES;//leftBellow
+			myBoard[temp + 1][_fromCol - 1] = adjElems;//leftBellow
 		if (temp != 9)
-			myBoard[temp + 1][_fromCol] = SHIP_EDGES;//bellow
+			myBoard[temp + 1][_fromCol] = adjElems;//bellow
 		if (temp != 9 && _fromCol != 9)
-			myBoard[temp + 1][_fromCol + 1] = SHIP_EDGES;//rightBellow
+			myBoard[temp + 1][_fromCol + 1] = adjElems;//rightBellow
 	}
 }
 
@@ -336,6 +334,7 @@ void Board::printShips()
 void Board::printBoard(){
 	Utils u;
 	WORD Attributes = 1;
+	Ship sh;
 
 	cout << "  ";
 	for (int k = 0; k < 10; k++)
@@ -360,30 +359,93 @@ void Board::printBoard(){
 				if (myBoard[i][j] == EMPTY || myBoard[i][j] == SHIP_EDGES) cout << "  ";
 				if (myBoard[i][j] == SHIP_EXIST) cout << "X ";
 				if (myBoard[i][j] == MISS) {
-					u.SetConsoleColour(&Attributes, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE);//white colour
+					u.SetConsoleColour(&Attributes, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE);//set white background
 					cout << "  ";
-					u.ResetConsoleColour(Attributes);
+					u.ResetConsoleColour(Attributes);//reset color
 				}
 				if (myBoard[i][j] == HIT) {
-					u.SetConsoleColour(&Attributes, FOREGROUND_INTENSITY | FOREGROUND_RED);
-					cout << "X ";
-					u.ResetConsoleColour(Attributes);
+					sh = p.getShipByElement(i, j);
+					if (!sh.isLiving()) {
+						u.SetConsoleColour(&Attributes, BACKGROUND_INTENSITY | BACKGROUND_RED);//set red background
+						cout << "X ";
+						u.ResetConsoleColour(Attributes);//reset color 
+					}
+					else {
+						u.SetConsoleColour(&Attributes, FOREGROUND_INTENSITY | FOREGROUND_RED);//set red forground
+						cout << "X ";
+						u.ResetConsoleColour(Attributes);//reset color 
+					}
+				}
+				if (myBoard[i][j] == HIT_EDGES)
+				{
+					u.SetConsoleColour(&Attributes, BACKGROUND_INTENSITY | BACKGROUND_RED);//set red color background
+					cout << "  ";
+					u.ResetConsoleColour(Attributes);//reset color 
 				}
 			}
 			else {
 				if (myBoard[i][j] == EMPTY || myBoard[i][j] == SHIP_EXIST || myBoard[i][j] == SHIP_EDGES) cout << "  ";
 				if (myBoard[i][j] == MISS) {
-					u.SetConsoleColour(&Attributes, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE);
+					u.SetConsoleColour(&Attributes, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE);//set white color background
 					cout << "  ";
-					u.ResetConsoleColour(Attributes);
+					u.ResetConsoleColour(Attributes);//reset color
 				}
 				if (myBoard[i][j] == HIT) {
-					u.SetConsoleColour(&Attributes, FOREGROUND_INTENSITY | FOREGROUND_RED);
-					cout << "X ";
-					u.ResetConsoleColour(Attributes);
+					sh = p.getShipByElement(i, j);
+					if (!sh.isLiving()) {
+						u.SetConsoleColour(&Attributes, BACKGROUND_INTENSITY | BACKGROUND_RED);//set red color background
+						cout << "X ";
+						u.ResetConsoleColour(Attributes);//reset color 
+					}
+					else {
+						u.SetConsoleColour(&Attributes, FOREGROUND_INTENSITY | FOREGROUND_RED);//set red color forground
+						cout << "X ";
+						u.ResetConsoleColour(Attributes);//reset color 
+					}
+				}if (myBoard[i][j] == HIT_EDGES)
+				{
+					u.SetConsoleColour(&Attributes, BACKGROUND_INTENSITY | BACKGROUND_RED);//set red color background
+					cout << "  ";
+					u.ResetConsoleColour(Attributes);//reset color 
 				}
-			}
-			
+			}	
+		}
+		cout << "|";
+		cout << endl;
+	}
+	cout << "  ";
+	for (int k = 0; k < 10; k++)
+	{
+		cout << "- ";
+	}
+	cout << endl;
+}
+
+// print board for development tests
+void Board::printBoardTest() {
+	Utils u;
+	WORD Attributes = 1;
+	Ship sh;
+
+	cout << "  ";
+	for (int k = 0; k < 10; k++)
+	{
+		cout << k << " ";
+	}
+	cout << endl;
+	cout << "  ";
+	for (int k = 0; k < 10; k++)
+	{
+		cout << "- ";
+	}
+	cout << endl;
+
+	for (int i = 0; i < 10; i++)
+	{
+		cout << i << "|";
+		for (int j = 0; j < 10; j++)
+		{
+			cout << myBoard[i][j] << " ";
 		}
 		cout << "|";
 		cout << endl;
@@ -398,75 +460,470 @@ void Board::printBoard(){
 
 void Board::play()
 {
-	int element, row, col;
-	bool choosenElement = false;
-	if (p.getNum() == OPPONENT) //your turn, updates will be on opponents board
+	try
 	{
-		cout << "Your turn..." << endl 
-			<< "Please choose a square to shoot on : ";
-	}
-	else { // opponent turn, updates will be on your board
-		cout << "PC's turn, wait until PC finish his turn..." << endl;
-	}
-
-	do // do-while loop checks wether the element alreaady choosed
-	{
-		if (p.getNum() == OPPONENT)
+		int element, row, col;
+		bool choosenElement = false;
+		if (p.getNum() == OPPONENT) //your turn, updates will be on opponent's board
 		{
-			if (choosenElement)
-				cout << "element already choosed, Please choose other element: " << endl;
-			
-			cin >> element;
+			cout << "Your turn..." << endl
+				<< "Please choose a square to shoot on : ";
 		}
-		else {
-			std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-			element = rand() % 100;// Generate a random number between 0 and 99
-			cout << element << endl;
+		else { // opponent's turn, updates will be on your board
+			cout << "PC's turn, wait until PC finish his turn..." << endl;
 		}
-		row = element / 10;
-		col = element % 10;
 
-		if (myBoard[row][col] == MISS || myBoard[row][col] == HIT)
+		do // do-while loop checks wether the board's element already choosed 
 		{
-			choosenElement = true;
-		}
-		else {
-			choosenElement = false;
-		}
-	} while (choosenElement);
+			if (p.getNum() == OPPONENT)//your turn
+			{
+				if (choosenElement)
+					cout << "Please choose other element: " << endl;
 
-	if (myBoard[row][col] == SHIP_EXIST)
-	{
-		myBoard[row][col] = HIT;
-		p.UpdateShipDestructionByElement(row, col);
-		cout << "HIT :)" << endl;
-		
+				cin >> element;
+				while (element < 0 || element > 99) {
+					cout << "please choose between 00 to 99" << endl;
+					cin >> element;
+				}
+			}
+			else {//opponent's turn
+				if (p.getAiShipHit().isShipHit())
+				{
+					AiKeepHitUntilShipDestroyed(p.getAiShipHit().getHitRow(), p.getAiShipHit().getHitCol());
+					return;
+				}
+				else {
+					element = rand() % 100;// Generate a random number between 0 and 99
+				}
+			}
+			row = element / 10;
+			col = element % 10;
+
+			if (myBoard[row][col] == MISS || myBoard[row][col] == HIT || myBoard[row][col] == HIT_EDGES)
+			{
+				choosenElement = true;
+			}
+			else {
+				choosenElement = false;
+				cout << element << endl;
+			}
+		} while (choosenElement);
+
+		if (myBoard[row][col] == SHIP_EXIST)
+		{
+			myBoard[row][col] = HIT;
+			Ship sh = p.UpdateShipDestructionByElement(row, col);
+			if (!sh.isLiving())
+				addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+					sh.getFromCol(), sh.getToRow(), sh.getToCol(), HIT, HIT_EDGES);
+			if (p.getNum() == MY_PLAYER) {
+				p.getAiShipHit().setHitRow(row);
+				p.getAiShipHit().setHitCol(col);
+				p.getAiShipHit().setShipHit(true);
+			}
+			cout << "HIT :)" << endl;
+			PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+		}
+		else if (myBoard[row][col] == SHIP_EDGES)
+		{
+			myBoard[row][col] = MISS;
+			cout << "MISS :(" << endl;
+			PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+		}
+		else if (myBoard[row][col] == EMPTY)
+		{
+			myBoard[row][col] = MISS;
+			cout << "MISS :(" << endl;
+			PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
-	else if (myBoard[row][col] == SHIP_EDGES)
+	catch (const std::exception& e)
 	{
-		myBoard[row][col] = MISS;
-		cout << "MISS :(" << endl;
+		cout << "exception accourd: " << e.what();
 	}
-	else if (myBoard[row][col] == EMPTY)
-	{
-		myBoard[row][col] = MISS;
-		cout << "MISS :(" << endl;
-	}
+	
 }
 
+//this function keeps the computer shoot the hitten ship untill it destroyes
+void Board::AiKeepHitUntilShipDestroyed(int _hitRow, int _hitCol)
+{
+	int ran;
+	bool hitOtherElement = true;
+
+	do// do-while to check if computer hit irelevant element, like ship-edges element or if something went wrong
+	{
+		if (p.getAiShipHit().isFirstHit()) {
+			p.getAiShipHit().setHitCount(2);
+			// Generate a random number between 0 and 3,
+			//this random number decides where the computer continue shooting after first hit
+			ran = rand() % 4;
+			switch (ran) {
+			case 0://right element
+				if (_hitCol + 1 != 10)
+				{
+					if (myBoard[_hitRow][_hitCol + 1] == HIT_EDGES || 
+						myBoard[_hitRow][_hitCol + 1] == MISS)
+						hitOtherElement = true;
+					else if (myBoard[_hitRow][_hitCol + 1] == SHIP_EXIST) {
+						cout << ((_hitRow * 10) + (_hitCol + 1)) << endl;//prints the element number
+						myBoard[_hitRow][_hitCol + 1] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow, _hitCol+1);
+						if (sh.isLiving()) {
+							p.getAiShipHit().setFirstHit(false);
+							p.getAiShipHit().setPosition(HORIZONTAL);
+							p.getAiShipHit().setHitDirection(RIGHT_DIRECTION);
+							PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						}
+						else {
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						hitOtherElement = false;
+						cout << "hit :)" << endl;
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+					}
+					else if (myBoard[_hitRow][_hitCol + 1] == EMPTY ||
+						myBoard[_hitRow][_hitCol + 1] == SHIP_EDGES) {
+						cout << ((_hitRow * 10) + (_hitCol + 1)) << endl;//prints the element number
+						myBoard[_hitRow][_hitCol + 1] = MISS;
+						hitOtherElement = false;
+						cout << "miss :(" << endl;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+					}
+				}
+				break;
+			case 1://left element
+				if (_hitCol - 1 != -1)
+				{
+					if (myBoard[_hitRow][_hitCol - 1] == HIT_EDGES ||
+						myBoard[_hitRow][_hitCol - 1] == MISS)
+						hitOtherElement = true;
+					else if (myBoard[_hitRow][_hitCol - 1] == SHIP_EXIST) {
+						cout << ((_hitRow * 10) + (_hitCol - 1)) << endl;
+						myBoard[_hitRow][_hitCol - 1] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow, _hitCol-1);
+						if (sh.isLiving()) {
+							p.getAiShipHit().setFirstHit(false);
+							p.getAiShipHit().setPosition(HORIZONTAL);
+							p.getAiShipHit().setHitDirection(LEFT_DIRECTION);
+						}
+						else {
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						cout << "hit :)" << endl;
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						hitOtherElement = false;
+					}
+					else if (myBoard[_hitRow][_hitCol - 1] == EMPTY ||
+						myBoard[_hitRow][_hitCol - 1] == SHIP_EDGES) {
+						cout << ((_hitRow * 10) + (_hitCol - 1)) << endl;
+						myBoard[_hitRow][_hitCol - 1] = MISS;
+						cout << "miss :(" << endl;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+						hitOtherElement = false;
+					}
+				}
+				break;
+			case 2:// above element
+				if (_hitRow - 1 != -1)
+				{
+					if (myBoard[_hitRow - 1][_hitCol] == HIT_EDGES ||
+						myBoard[_hitRow - 1][_hitCol] == MISS)
+						hitOtherElement = true;
+					else if (myBoard[_hitRow - 1][_hitCol] == SHIP_EXIST) {
+						cout << (((_hitRow - 1) * 10) + _hitCol) << endl;
+						myBoard[_hitRow - 1][_hitCol] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow - 1, _hitCol);
+						if (sh.isLiving()) {
+							p.getAiShipHit().setFirstHit(false);
+							p.getAiShipHit().setPosition(VERTICAL);
+							p.getAiShipHit().setHitDirection(ABOVE_DIRECTION);
+						}
+						else {
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						cout << "hit :)" << endl;
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						hitOtherElement = false;
+					}
+					else if (myBoard[_hitRow - 1][_hitCol] == EMPTY ||
+						myBoard[_hitRow - 1][_hitCol] == SHIP_EDGES) {
+						cout << (((_hitRow - 1) * 10) + _hitCol) << endl;
+						myBoard[_hitRow - 1][_hitCol] = MISS;
+						cout << "miss :(" << endl;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+						hitOtherElement = false;
+					}
+				}
+				break;
+			case 3://bellow element
+				if (_hitRow + 1 != 10)
+				{
+					if (myBoard[_hitRow + 1][_hitCol] == HIT_EDGES ||
+						myBoard[_hitRow + 1][_hitCol] == MISS)
+						hitOtherElement = true;
+					else if (myBoard[_hitRow + 1][_hitCol] == SHIP_EXIST) {
+						cout << (((_hitRow + 1) * 10) + _hitCol) << endl;
+						myBoard[_hitRow + 1][_hitCol] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow + 1, _hitCol);
+						if (sh.isLiving()) {
+							p.getAiShipHit().setFirstHit(false);
+							p.getAiShipHit().setPosition(VERTICAL);
+							p.getAiShipHit().setHitDirection(BELLOW_DIRECTION);
+						}
+						else {
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						cout << "hit :)" << endl;
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						hitOtherElement = false;
+					}
+					else if (myBoard[_hitRow + 1][_hitCol] == EMPTY || 
+								myBoard[_hitRow + 1][_hitCol] == SHIP_EDGES) {
+						cout << (((_hitRow + 1) * 10) + _hitCol) << endl;
+						myBoard[_hitRow + 1][_hitCol] = MISS;
+						cout << "miss :(" << endl;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+						hitOtherElement = false;
+					}
+				}
+				break;
+			default://none of the above cases
+				hitOtherElement = true;
+				break;
+			}
+		}else {
+			int hitCount = p.getAiShipHit().getHitCount();
+			switch (p.getAiShipHit().getHitDirection())
+			{
+			case LEFT_DIRECTION:
+				cout << "left, hit count: " << hitCount << endl;
+				if (_hitCol - hitCount != -1) {
+					if (myBoard[_hitRow][_hitCol - hitCount] == HIT_EDGES ||
+						myBoard[_hitRow][_hitCol - hitCount] == MISS) {
+						p.getAiShipHit().setHitDirection(RIGHT_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = true;
+					}
+					else if (myBoard[_hitRow][_hitCol - hitCount] == SHIP_EXIST) {
+						cout << ((_hitRow * 10) + (_hitCol - hitCount)) << endl;
+						cout << "hit :)" << endl;
+						myBoard[_hitRow][_hitCol - hitCount] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow, _hitCol - hitCount);
+						p.getAiShipHit().setHitCount(hitCount + 1);
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						if (!sh.isLiving())
+						{
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						hitOtherElement = false;
+					}
+					else if (myBoard[_hitRow][_hitCol - hitCount] == EMPTY ||
+						myBoard[_hitRow][_hitCol - hitCount] == SHIP_EDGES) {
+						cout << ((_hitRow * 10) + (_hitCol - hitCount)) << endl;
+						cout << "miss :(" << endl;
+						myBoard[_hitRow][_hitCol - hitCount] = MISS;
+						p.getAiShipHit().setHitDirection(RIGHT_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = false;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+					}
+				}
+				else {
+					p.getAiShipHit().setHitDirection(RIGHT_DIRECTION);
+					p.getAiShipHit().setHitCount(1);
+					hitOtherElement = true;
+				}
+				break;
+			case RIGHT_DIRECTION:
+				cout << "right, hit count: " << hitCount << endl;
+				if (_hitCol + hitCount != 10) {
+					if (myBoard[_hitRow][_hitCol + hitCount] == HIT_EDGES ||
+						myBoard[_hitRow][_hitCol + hitCount] == MISS) {
+						p.getAiShipHit().setHitDirection(LEFT_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = true;
+					}
+					else if (myBoard[_hitRow][_hitCol + hitCount] == SHIP_EXIST) {
+						cout << ((_hitRow * 10) + (_hitCol + hitCount)) << endl;//prints the element number
+						cout << "hit :)" << endl;
+						myBoard[_hitRow][_hitCol + hitCount] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow, _hitCol + hitCount);
+						p.getAiShipHit().setHitCount(hitCount + 1);
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						if (!sh.isLiving())
+						{
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						hitOtherElement = false;
+					}
+					else if (myBoard[_hitRow][_hitCol + hitCount] == EMPTY ||
+						myBoard[_hitRow][_hitCol + hitCount] == SHIP_EDGES) {
+						cout << ((_hitRow * 10) + (_hitCol + hitCount)) << endl;
+						cout << "miss :(" << endl;
+						myBoard[_hitRow][_hitCol + hitCount] = MISS;
+						p.getAiShipHit().setHitDirection(LEFT_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = false;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+					}
+				}
+				else {
+					p.getAiShipHit().setHitDirection(LEFT_DIRECTION);
+					p.getAiShipHit().setHitCount(1);
+					hitOtherElement = true;
+				}
+				break;
+			case ABOVE_DIRECTION:
+				cout << "up, hit count: " << hitCount << endl;
+				if (_hitRow - hitCount != -1) {
+					if (myBoard[_hitRow - hitCount][_hitCol] == HIT_EDGES ||
+						myBoard[_hitRow - hitCount][_hitCol] == MISS)
+					{
+						p.getAiShipHit().setHitDirection(BELLOW_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = true;
+					}
+					else if (myBoard[_hitRow - hitCount][_hitCol] == SHIP_EXIST) {
+						cout << (((_hitRow - hitCount) * 10) + _hitCol) << endl;
+						cout << "hit :)" << endl;
+						myBoard[_hitRow - hitCount][_hitCol] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow - hitCount, _hitCol);
+						p.getAiShipHit().setHitCount(hitCount + 1);
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						if (!sh.isLiving())
+						{
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						hitOtherElement = false;
+					}
+					else if (myBoard[_hitRow - hitCount][_hitCol] == EMPTY ||
+						myBoard[_hitRow - hitCount][_hitCol] == SHIP_EDGES) {
+						cout << (((_hitRow - hitCount) * 10) + _hitCol) << endl;
+						cout << "miss :(" << endl;
+						myBoard[_hitRow - hitCount][_hitCol] = MISS;
+						p.getAiShipHit().setHitDirection(BELLOW_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = false;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+					}
+				}
+				else {
+					p.getAiShipHit().setHitDirection(BELLOW_DIRECTION);
+					p.getAiShipHit().setHitCount(1);
+					hitOtherElement = true;
+				}
+				break;
+			case BELLOW_DIRECTION:
+				cout << "down, hit count: " << hitCount << endl;
+				if (_hitRow + hitCount != 10) {
+					if (myBoard[_hitRow + hitCount][_hitCol] == HIT_EDGES ||
+						myBoard[_hitRow + hitCount][_hitCol] == MISS)
+					{
+						p.getAiShipHit().setHitDirection(ABOVE_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = true;
+					}
+					else if (myBoard[_hitRow + hitCount][_hitCol] == SHIP_EXIST) {
+						cout << (((_hitRow + hitCount) * 10) + _hitCol) << endl;
+						cout << "hit :)" << endl;
+						myBoard[_hitRow + hitCount][_hitCol] = HIT;
+						Ship sh = p.UpdateShipDestructionByElement(_hitRow + hitCount, _hitCol);
+						p.getAiShipHit().setHitCount(hitCount + 1);
+						PlaySound(TEXT("bomb-02.wav"), NULL, SND_SYNC);
+						if (!sh.isLiving())
+						{
+							p.getAiShipHit().setShipHit(false);
+							p.getAiShipHit().setFirstHit(true);
+							addToBoard(sh.getPosition(), sh.getSize(), sh.getFromRow(),
+								sh.getFromCol(), sh.getToRow(), sh.getToCol(),
+								HIT, HIT_EDGES);
+						}
+						hitOtherElement = false;
+					}
+					else if (myBoard[_hitRow + hitCount][_hitCol] == EMPTY ||
+						myBoard[_hitRow + hitCount][_hitCol] == SHIP_EDGES) {
+						cout << (((_hitRow + hitCount) * 10) + _hitCol) << endl;
+						cout << "miss :(" << endl;
+						myBoard[_hitRow + hitCount][_hitCol] = MISS;
+						p.getAiShipHit().setHitDirection(ABOVE_DIRECTION);
+						p.getAiShipHit().setHitCount(1);
+						hitOtherElement = false;
+						PlaySound(TEXT("splash.wav"), NULL, SND_SYNC);
+					}
+				}
+				else {
+					p.getAiShipHit().setHitDirection(ABOVE_DIRECTION);
+					p.getAiShipHit().setHitCount(1);
+					hitOtherElement = true;
+				}
+				break;
+			default:
+				hitOtherElement = true;
+				cout << "something went wrong, no direction to hit" << endl;
+				break;
+			}
+		}
+	} while (hitOtherElement);
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+}
+
+// this function responsible for deciding wether the game ends or continues
+// by checking ships destruction
+// if there are ships alive game continue, if all ships destroyed then game-over
+//game-over = false
+//game-on = true
 bool Board::checkGameStatus()
 {
-	int counter=0;
+	int counter = 0;
 	for (int i = 0; i < 5; i++)
 	{
-		if (!p.getShip(i).checkIfLiving(p.getShip(i).isDestruction()))
+		if (!getShip(i).checkIfLiving(getShip(i).getDestruction()))
 		{
 			counter++;
 		}
 	}
-	if (counter==5)
+	if (counter == 5)
 	{
+		system("cls");
+		/*if (p.getNum() == MY_PLAYER)
+		{
+			cout << "pc win";
+		}
+		else {
+			cout << "you win";
+		}*/
 		return GAME_OVER;
 	}
 	return GAME_ON;
 }
+
+

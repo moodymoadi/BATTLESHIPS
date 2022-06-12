@@ -44,7 +44,7 @@ public:
 	int getToCol();
 	bool isChoosed();
 	bool isLiving();
-	vector<bool> isDestruction();
+	vector<bool> getDestruction();
 
 	void updateDestruction(int i);
 	bool checkIfLiving(vector<bool> _dest);

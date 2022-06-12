@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Board.h"
-#include <windows.h> // WinApi header
+#include <windows.h>
 using namespace std;
 
 class Utils {
@@ -97,24 +97,75 @@ public:
 		{
 			cout << endl;
 			cout << "player 1 ship " << i + 1 << ":" << endl;
+			cout << "ship size: " << _b1.getShip(i).getSize() << endl;
 			cout << "is ship choosed: " << _b1.getShip(i).isChoosed() << endl;
 			cout << "is ship living: " << _b1.getShip(i).isLiving() << endl;
 			cout << "ship from row: " << _b1.getShip(i).getFromRow() << endl;
 			cout << "ship from col: " << _b1.getShip(i).getFromCol() << endl;
 			cout << "ship to row: " << _b1.getShip(i).getToRow() << endl;
 			cout << "ship to col: " << _b1.getShip(i).getToCol() << endl;
+			cout << "ship position: " << _b1.getShip(i).getPosition() << endl;
 		}
 
 		for (int i = 0; i < 5; i++)
 		{
 			cout << endl;
 			cout << "player 2 ship " << i + 1 << ":" << endl;
+			cout << "ship size: " << _b2.getShip(i).getSize() << endl;
 			cout << "is ship choosed: " << _b2.getShip(i).isChoosed() << endl;
 			cout << "is ship living: " << _b2.getShip(i).isLiving() << endl;
 			cout << "ship from row: " << _b2.getShip(i).getFromRow() << endl;
 			cout << "ship from col: " << _b2.getShip(i).getFromCol() << endl;
 			cout << "ship to row: " << _b2.getShip(i).getToRow() << endl;
 			cout << "ship to col: " << _b2.getShip(i).getToCol() << endl;
+			cout << "ship position: " << _b2.getShip(i).getPosition() << endl;
 		}
+	}
+
+	void printTwoBaords(Board b1, Board b2) {
+		system("cls");
+		cout << endl << "Opponent's board: " << endl;
+		b2.printBoard();
+		cout << endl << "My board: " << endl;
+		b1.printBoard();
+	}
+
+	void gamePlay(Board b1, Board b2) {
+		bool gameStatus = GAME_ON;
+		int currentTurn = MY_PLAYER;
+		while (gameStatus == GAME_ON) // while gameStatus is equal to gameOn=1 keep playing
+		{
+			printTwoBaords(b1, b2);
+			if (currentTurn == MY_PLAYER)
+			{
+				b2.play(); // you play and update player2's board
+				gameStatus = b2.checkGameStatus(); // check status of player 2 ships
+				currentTurn = OPPONENT; // switch turn
+			}
+			else {
+				b1.play(); // AI plays and update your board
+				gameStatus = b1.checkGameStatus(); //check status of your ships, if false then game-over
+				currentTurn = MY_PLAYER; // switch turn
+			}
+		}
+		endOfGame(b1, b2);
+	}
+
+	void endOfGame(Board myBoard, Board AIBoard) {
+		system("cls");
+		cout << endl << "Opponent's board: " << endl;
+		AIBoard.printBoard();
+		cout << endl << "My board: " << endl;
+		myBoard.printBoard();
+
+		if (!myBoard.getPlayer().checkIfAllShipsAlive()) {
+			cout << "pc win";
+			PlaySound(TEXT("game-lose.wav"), NULL, SND_SYNC);
+		}
+		else if (!AIBoard.getPlayer().checkIfAllShipsAlive()) {
+			cout << "you win";
+			PlaySound(TEXT("victory.wav"), NULL, SND_SYNC);
+		}
+			
 	}
 };

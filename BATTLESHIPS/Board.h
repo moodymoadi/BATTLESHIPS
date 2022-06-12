@@ -3,14 +3,19 @@
 #include <thread>
 #include "Player.h";
 
-
 using namespace std;
 
 const int EMPTY = 0;
 const int SHIP_EXIST = 1;
-const int SHIP_EDGES = -1;
+const int SHIP_EDGES = 5;
 const int HIT = 2;
 const int MISS = 3;
+const int HIT_EDGES = 4;
+
+const int RIGHT_DIRECTION = 0;
+const int LEFT_DIRECTION = 1;
+const int ABOVE_DIRECTION = 2;
+const int BELLOW_DIRECTION = 3;
 
 const int GAME_ON = 1;
 const int GAME_OVER = 0;
@@ -31,17 +36,19 @@ public:
 
 
 	void printBoard();
+	void printBoardTest();
 	void printShips();
 	void addShipsRandomly();
 	bool checkIfAdjacent(int _position, int _size, int _fromRow, int _fromCol, int toRow, int toCol);
-	void addToBoard(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol);
+	void addToBoard(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol, int _shipElems, int _adjElems);
 	// -> functions inside the addToBoard() function  
-	void addFromLeftToRight(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol);
-	void addFromRightToLeft(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol);
-	void addFromUpToDown(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol);
-	void addFromDownToUp(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol);
+	void addFromLeftToRight(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol, int _shipElems, int adjElems);
+	void addFromRightToLeft(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol, int _shipElems, int adjElems);
+	void addFromUpToDown(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol, int _shipElems, int adjElems);
+	void addFromDownToUp(int _position, int _size, int _fromRow, int _fromCol, int _toRow, int _toCol, int _shipElems, int adjElems);
 	// to here <- 
+	//void fillBoardWhenShipDestroyed(int row, int col);
 	void play();
 	bool checkGameStatus();
-	void endGame();
+	void AiKeepHitUntilShipDestroyed(int _hitRow, int _hitCol);
 };

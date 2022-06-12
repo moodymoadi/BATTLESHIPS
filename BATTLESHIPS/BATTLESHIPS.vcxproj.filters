@@ -27,6 +27,15 @@
     <ClInclude Include="Ship.h">
       <Filter>Source Files\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Source Files\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="AiShipHit.h">
+      <Filter>Source Files\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Source Files\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -42,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AiShipHit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "Ship.h"
+#include "AiShipHit.h"
 #include <time.h>
 
 using namespace std;
@@ -14,6 +15,7 @@ class Player {
 private:
 	int num;
 	Ship ships[NUM_OF_SHIPS];
+	AiShipHit aiShipHit;
 
 public:
 	Player();
@@ -24,8 +26,10 @@ public:
 	Ship & getShip(int i);
 	Ship* getShips();
 	Ship& getShipByElement(int row, int col);
-	void UpdateShipDestructionByElement(int row, int col);
+	Ship& UpdateShipDestructionByElement(int row, int col);
+	bool checkIfAllShipsAlive();
 	int getNum();
+	AiShipHit& getAiShipHit();
 	void printShips();
 	int getShipSize(int pickedShip);
 
